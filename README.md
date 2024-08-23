@@ -28,38 +28,39 @@ This spark/scala code builds features (that could be pivoted) :
 ## Does an event exist ?
 
 ``` scala
-val result = df.getCheckFeatures("timestamp_interaction", "basedt", "id_client", 
+val result = df.getCountEventsWithinMilestonesFeatures("timestamp_interaction", "basedt", "id_client", 
                                  "pivot", "", Seq(1, 3, 6))
 ```
 
 Result is
 
-|id_client |pivot                       |nb_1_month|nb_3_month|nb_6_month|
-|----------|----------------------------|----------|----------|----------|
-|17AbPYC2M7|MAROC_pin_errone            |0         |0         |1         |
-|17AbPYC2M7|MAROC_paiement_tpe          |0         |0         |1         |
-|17AbPYC2M7|INTERNATIONAL_paiement_tpe  |1         |1         |1         |
-|17AbPYC2M7|GAB_MAROC_retrait_gab       |0         |0         |1         |
-|sgjuL0CYJf|GAB_MAROC_retrait_gab       |0         |0         |2         |
-|sgjuL0CYJf|GAB_MAROC_consultation_solde|0         |1         |1         |
+|id_client |pivot                       |nb_1m|nb_3m|nb_6m|
+|----------|----------------------------|-----|-----|-----|
+|17AbPYC2M7|MAROC_pin_errone            |0    |0    |1    |
+|17AbPYC2M7|MAROC_paiement_tpe          |0    |0    |1    |
+|17AbPYC2M7|INTERNATIONAL_paiement_tpe  |1    |1    |1    |
+|17AbPYC2M7|GAB_MAROC_retrait_gab       |0    |0    |1    |
+|sgjuL0CYJf|GAB_MAROC_retrait_gab       |0    |0    |2    |
+|sgjuL0CYJf|GAB_MAROC_consultation_solde|0    |1    |1    |
+
 
 ## What is the value of an event ?
 
 ``` scala
-val result = df.getCheckValueFeatures("timestamp_interaction", "basedt", "montant_dhs", "id_client", 
+val result = df.getCountsSumsValuesWithinMilestonesFeatures("timestamp_interaction", "basedt", "montant_dhs", "id_client", 
                                       "pivot", "mt", Seq(1, 3, 6))
 ```
 
 Result is
 
-|id_client |pivot                       |sum_mt_1_month|sum_mt_3_month|sum_mt_6_month|
-|----------|----------------------------|--------------|--------------|--------------|
-|17AbPYC2M7|MAROC_pin_errone            |0.0           |0.0           |0.0           |
-|17AbPYC2M7|MAROC_paiement_tpe          |0.0           |0.0           |1207.1        |
-|17AbPYC2M7|INTERNATIONAL_paiement_tpe  |299.0         |299.0         |299.0         |
-|17AbPYC2M7|GAB_MAROC_retrait_gab       |0.0           |0.0           |500.0         |
-|sgjuL0CYJf|GAB_MAROC_retrait_gab       |0.0           |0.0           |1700.0        |
-|sgjuL0CYJf|GAB_MAROC_consultation_solde|0.0           |0.0           |0.0           |
+|id_client |pivot                       |nb_mt_1m|nb_mt_3m|nb_mt_6m|sum_mt_1m|sum_mt_3m|sum_mt_6m|
+|----------|----------------------------|--------|--------|--------|---------|---------|---------|
+|17AbPYC2M7|MAROC_pin_errone            |0       |0       |1       |0.0      |0.0      |0.0      |
+|17AbPYC2M7|MAROC_paiement_tpe          |0       |0       |1       |0.0      |0.0      |1200.1   |
+|17AbPYC2M7|INTERNATIONAL_paiement_tpe  |1       |1       |1       |300.0    |300.0    |300.0    |
+|17AbPYC2M7|GAB_MAROC_retrait_gab       |0       |0       |1       |0.0      |0.0      |500.0    |
+|sgjuL0CYJf|GAB_MAROC_retrait_gab       |0       |0       |2       |0.0      |0.0      |1700.0   |
+|sgjuL0CYJf|GAB_MAROC_consultation_solde|0       |1       |1       |0.0      |0.0      |0.0      |
 
 ## How is the event evolving between the interval 1-6 months and the interval 6-12 months ?
 
