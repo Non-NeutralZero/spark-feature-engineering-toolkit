@@ -1,7 +1,20 @@
 # spark-feature-engineering-toolkit
 Snippets of spark/scala code used to do some handy feature engineering.
 
-Many seems simple but they save a lot of LoC and make the code more readable.
+Many seems simple, but they save a lot of LoC and make the code more readable.
+
+We standardize our datasets to follow a template of :
+- groupByCol: column on which the features are developed around, 
+- eventDateCol: column indicating the date of an event of interest,
+- valueCol: column with values associated with an event,
+- pivotCol or pivotCols: column or columns that based on which we would build the features' functional or domain granularity.
+
+In the example portrayed in this code, we will compute features associated with a client's card usage:
+- groupByCol = id_client,
+- eventDateCol = timestamp_interaction,
+- valueCol = montant_dhs,
+- pivotCols = lieu_interaction and type_interaction.
+
 
 Having a dataset :
 
@@ -25,14 +38,17 @@ We apply basic transformations
 
 This spark/scala code builds features (that could be pivoted) :
 
-## Does an event exist ?
+## How many events exist in different month milestones ?
 
 ``` scala
 val result = df.getCountEventsWithinMilestonesFeatures("timestamp_interaction", "basedt", "id_client", 
                                  "pivot", "", Seq(1, 3, 6))
 ```
 
-Result is
+Counts of event column associated for each month milestone. 
+In the example below, we count the number of time a card usage (i.e. event)
+has been recorded for each client and the sums of amounts associated with the usage type, for each month milestone.
+
 
 |id_client |pivot                       |nb_1m|nb_3m|nb_6m|
 |----------|----------------------------|-----|-----|-----|
@@ -44,14 +60,15 @@ Result is
 |sgjuL0CYJf|GAB_MAROC_consultation_solde|0    |1    |1    |
 
 
-## What is the value of an event ?
+## What is the value associated with each milestone ?
 
 ``` scala
 val result = df.getCountsSumsValuesWithinMilestonesFeatures("timestamp_interaction", "basedt", "montant_dhs", "id_client", 
                                       "pivot", "mt", Seq(1, 3, 6))
 ```
 
-Result is
+Counts and Sums of a value column associated with an event. In the example below, we count the number of time a card usage (i.e. event) 
+has been recorded for each client and the sums of amounts associated with the usage type, for each month milestone.
 
 |id_client |pivot                       |nb_mt_1m|nb_mt_3m|nb_mt_6m|sum_mt_1m|sum_mt_3m|sum_mt_6m|
 |----------|----------------------------|--------|--------|--------|---------|---------|---------|
@@ -62,14 +79,14 @@ Result is
 |sgjuL0CYJf|GAB_MAROC_retrait_gab       |0       |0       |2       |0.0      |0.0      |1700.0   |
 |sgjuL0CYJf|GAB_MAROC_consultation_solde|0       |1       |1       |0.0      |0.0      |0.0      |
 
-## How is the event evolving between the interval 1-6 months and the interval 6-12 months ?
+## How is the event evolving between two time periods ?
 
 ``` scala
 val result = df.getRatioFeatures("timestamp_interaction", "basedt", "montant_dhs", "id_client", 
                                  "pivot", Seq((1, 6, 6, 12)))
 ```
 
-Result is
+Ratios calculate trend features. In the example below, we compute the evolution between the period 1-6 months and 6-12 months before a base date. 
 
 |id_client |pivot                       |ratio_1_6_6_12    |
 |----------|----------------------------|------------------|
